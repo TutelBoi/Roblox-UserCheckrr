@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Roblox Username Checker</title>
+<style>
+:root {
+--primary: #3b82f6;
+--background: #0d1117;
+--text: #ffffff;
+--input-bg: #161b22;
+--error: #ef4444;
+--success: #22c55e;
+}
+
+body {
+margin: 0;
+padding: 0;
+background-color: var(--background);
+color: var(--text);
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 100vh;
+}
+
+.container {
+background-color: #111827;
+padding: 30px 40px;
+border-radius: 12px;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+width: 100%;
+max-width: 400px;
+text-align: center;
+}
+
+h1 {
+font-size: 24px;
+margin-bottom: 20px;
+}
+
+input {
+width: 100%;
+padding: 12px 15px;
+margin-bottom: 15px;
+border: none;
+border-radius: 8px;
+font-size: 16px;
+background-color: var(--input-bg);
+color: var(--text);
+outline: none;
+}
+
+button {
+width: 100%;
+padding: 12px;
+font-size: 16px;
+font-weight: bold;
+background-color: var(--primary);
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: background 0.3s;
+}
+
+button:hover {
+background-color: #2563eb;
+}
+
+#result {
+margin-top: 20px;
+font-size: 18px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Roblox Username Checker</h1>
+<input type="text" id="username" placeholder="Enter a username">
+<button onclick="checkUsername()">Check</button>
+<div id="result"></div>
+</div>
+
+<script>
+async function checkUsername() {
+const username = document.getElementById("username").value.trim();
+const resultDiv = document.getElementById("result");
+
+if (!username) {
+resultDiv.innerHTML = `<span style="color: var(--error);">Please enter a username.</span>`;
+return;
+}
+
+resultDiv.innerHTML = "Checking...";
+
+try {
+const response = await fetch("https://corsproxy.io/?https://users.roblox.com/v1/usernames/users", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+usernames: [username],
+excludeBannedUsers: false
+})
+});
+
+const data = await response.json();
+
+if (data.data && data.data.length > 0) {
+resultDiv.innerHTML = `<span style="color: var(--error);">❌ "${username}" is taken.</span>`;
+} else {
+resultDiv.innerHTML = `<span style="color: var(--success);">✅ "${username}" is available!</span>`;
+}
+
+} catch (error) {
+resultDiv.innerHTML = `<span style="color: var(--error);">❌ Error checking username.</span>`;
+console.error(error);
+}
+}
+</script>
+</body>
+</html>
